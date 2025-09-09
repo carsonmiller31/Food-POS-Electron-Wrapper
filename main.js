@@ -333,6 +333,35 @@ ipcMain.handle('force-kill-app', async () => {
   setTimeout(() => app.exit(0), 1000);
 });
 
+// Open admin panel from web POS
+ipcMain.handle('open-admin-panel', async () => {
+  if (adminWindow) {
+    adminWindow.focus();
+    return;
+  }
+  
+  adminWindow = new BrowserWindow({
+    width: 600,
+    height: 500,
+    modal: true,
+    parent: mainWindow,
+    autoHideMenuBar: true,
+    resizable: false,
+    alwaysOnTop: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: require('path').join(__dirname, 'preload.js')
+    }
+  });
+
+  adminWindow.loadFile('admin-panel.html');
+  
+  adminWindow.on('closed', () => {
+    adminWindow = null;
+  });
+});
+
 app.on('window-all-closed', () => {
   if (!isQuitting) {
     app.quit();

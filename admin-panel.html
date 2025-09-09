@@ -106,6 +106,15 @@
         .btn-cancel:hover {
             background: #555;
         }
+
+        .btn-update {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-update:hover {
+            background: #218838;
+        }
         
         .auth-form {
             display: block;
@@ -162,7 +171,7 @@
             <div id="settingsMessage" class="success"></div>
             <div class="button-group">
                 <button class="btn btn-cancel" onclick="closeAdmin()">Close</button>
-                <button class="btn btn-cancel" onclick="checkForUpdates()">Check Updates</button>
+                <button class="btn btn-update" onclick="checkForUpdates()">🔄 Check Updates</button>
                 <button class="btn btn-save" onclick="saveSettings()">Save Settings</button>
             </div>
         </div>

@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 // Simple API for printing and admin functions
 contextBridge.exposeInMainWorld('electronAPI', {
   print: (text) => ipcRenderer.invoke('print', text),
+  openAdminPanel: () => ipcRenderer.invoke('open-admin-panel'),
   validatePassword: (password) => ipcRenderer.invoke('validate-password', password),
   saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
   closeAdmin: () => ipcRenderer.invoke('close-admin'),
