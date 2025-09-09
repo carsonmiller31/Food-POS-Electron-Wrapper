@@ -1,0 +1,8 @@
+{
+  "appUrl": "http://192.168.1.186:3000",
+  "debugMode": true,
+  "disableRightClick": true,
+  "autoRestart": null,
+  "adminPassword": "admin123",
+  "printerName": "default"
+}

@@ -29,13 +29,18 @@
     "files": [
       "main.js",
       "preload.js",
+      "settings.js",
+      "admin-panel.html",
+      "update-notification.html",
       "package.json"
     ],
     "extraResources": [],
     "win": {
       "target": {
         "target": "nsis",
-        "arch": ["x64"]
+        "arch": [
+          "x64"
+        ]
       },
       "artifactName": "MovieMill-POS-Kiosk-Setup-${version}.${ext}"
     },
@@ -43,11 +48,17 @@
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         },
         {
           "target": "zip",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
       "category": "public.app-category.business",
@@ -58,11 +69,15 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "deb",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "category": "Office"
@@ -105,13 +120,16 @@
     "publish": {
       "provider": "github",
       "owner": "moviemill",
-      "repo": "pos-kiosk"
+      "repo": "pos-kiosk",
+      "private": false
     }
   },
   "keywords": [],
   "author": "Movie Mill",
   "type": "commonjs",
-  "dependencies": {},
+  "dependencies": {
+    "electron-updater": "^6.6.2"
+  },
   "devDependencies": {
     "electron": "^38.0.0",
     "electron-builder": "^26.0.12",

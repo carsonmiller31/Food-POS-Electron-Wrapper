@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .admin-container {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 30px;
+            width: 500px;
+            max-width: 90vw;
+        }
+        
+        .admin-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .admin-header h1 {
+            color: #f0f0f0;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .admin-header p {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #ccc;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #007acc;
+            box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-save {
+            background: #007acc;
+            color: white;
+        }
+        
+        .btn-save:hover {
+            background: #005a99;
+        }
+        
+        .btn-cancel {
+            background: #444;
+            color: #ccc;
+        }
+        
+        .btn-cancel:hover {
+            background: #555;
+        }
+        
+        .auth-form {
+            display: block;
+        }
+        
+        .settings-form {
+            display: none;
+        }
+        
+        .error {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .success {
+            color: #51cf66;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="auth-form" id="authForm">
+            <div class="admin-header">
+                <h1>🔐 Admin Access</h1>
+                <p>Enter password to access settings</p>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Enter admin password">
+                <div id="authError" class="error"></div>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-cancel" onclick="closeAdmin()">Cancel</button>
+                <button class="btn btn-save" onclick="authenticate()">Login</button>
+            </div>
+        </div>
+
+        <div class="settings-form" id="settingsForm">
+            <div class="admin-header">
+                <h1>⚙️ Admin Settings</h1>
+                <p>Configure application settings</p>
+            </div>
+            <div class="form-group">
+                <label for="appUrl">Application URL:</label>
+                <input type="text" id="appUrl" placeholder="http://192.168.1.186:3000">
+            </div>
+            <div class="form-group">
+                <label for="newPassword">New Admin Password:</label>
+                <input type="password" id="newPassword" placeholder="Leave blank to keep current">
+            </div>
+            <div id="settingsMessage" class="success"></div>
+            <div class="button-group">
+                <button class="btn btn-cancel" onclick="closeAdmin()">Close</button>
+                <button class="btn btn-cancel" onclick="checkForUpdates()">Check Updates</button>
+                <button class="btn btn-save" onclick="saveSettings()">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSettings = {};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('password').focus();
+            
+            document.getElementById('password').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') authenticate();
+            });
+        });
+
+        async function authenticate() {
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('authError');
+            
+            if (!password) {
+                errorEl.textContent = 'Please enter a password';
+                return;
+            }
+
+            try {
+                const result = await window.electronAPI.validatePassword(password);
+                if (result.valid) {
+                    currentSettings = result.settings;
+                    showSettingsForm();
+                } else {
+                    errorEl.textContent = 'Invalid password';
+                    document.getElementById('password').value = '';
+                    document.getElementById('password').focus();
+                }
+            } catch (error) {
+                errorEl.textContent = 'Authentication failed';
+            }
+        }
+
+        function showSettingsForm() {
+            document.getElementById('authForm').style.display = 'none';
+            document.getElementById('settingsForm').style.display = 'block';
+            
+            document.getElementById('appUrl').value = currentSettings.appUrl || '';
+            document.getElementById('appUrl').focus();
+        }
+
+        async function saveSettings() {
+            const appUrl = document.getElementById('appUrl').value.trim();
+            const newPassword = document.getElementById('newPassword').value;
+            const messageEl = document.getElementById('settingsMessage');
+
+            if (!appUrl) {
+                messageEl.textContent = 'Application URL is required';
+                messageEl.className = 'error';
+                return;
+            }
+
+            const settings = {
+                appUrl
+            };
+
+            if (newPassword) {
+                settings.adminPassword = newPassword;
+            }
+
+            try {
+                const result = await window.electronAPI.saveSettings(settings);
+                if (result) {
+                    messageEl.textContent = 'Settings saved successfully! Restart app to apply URL changes.';
+                    messageEl.className = 'success';
+                    setTimeout(() => {
+                        closeAdmin();
+                    }, 2000);
+                } else {
+                    messageEl.textContent = 'Failed to save settings';
+                    messageEl.className = 'error';
+                }
+            } catch (error) {
+                messageEl.textContent = 'Error saving settings';
+                messageEl.className = 'error';
+            }
+        }
+
+        async function checkForUpdates() {
+            const messageEl = document.getElementById('settingsMessage');
+            messageEl.textContent = 'Checking for updates...';
+            messageEl.className = 'success';
+            
+            try {
+                const result = await window.electronAPI.checkForUpdates();
+                if (result) {
+                    messageEl.textContent = 'Update check initiated. Please wait...';
+                } else {
+                    messageEl.textContent = 'No updates available';
+                }
+            } catch (error) {
+                messageEl.textContent = 'Failed to check for updates';
+                messageEl.className = 'error';
+            }
+        }
+
+        function closeAdmin() {
+            window.electronAPI.closeAdmin();
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeAdmin();
+            }
+        });
+    </script>
+</body>
+</html>
