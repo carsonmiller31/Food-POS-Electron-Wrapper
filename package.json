@@ -120,7 +120,7 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "carsonmiller",
+      "owner": "carsonmiller31",
       "repo": "Food-POS-Electron-Wrapper",
       "private": true
     }

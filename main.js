@@ -7,6 +7,8 @@ let adminWindow;
 let updateWindow;
 let settings;
 let pendingUpdateInfo;
+let isQuitting = false;
+let updateReadyToInstall = false;
 
 function createWindow() {
   settings = new SettingsManager();
@@ -26,6 +28,14 @@ function createWindow() {
   const APP_URL = process.env.APP_URL || settings.get('appUrl');
   mainWindow.loadURL(APP_URL);
   
+  // Handle window close event
+  mainWindow.on('close', (event) => {
+    if (!isQuitting && updateReadyToInstall) {
+      event.preventDefault();
+      gracefulShutdown();
+    }
+  });
+  
   registerAdminShortcut();
   setupAutoUpdater();
 }
@@ -33,7 +43,7 @@ function createWindow() {
 function setupAutoUpdater() {
   // Configure auto-updater
   autoUpdater.autoDownload = false;
-  autoUpdater.autoInstallOnAppQuit = true;
+  autoUpdater.autoInstallOnAppQuit = false;
   
   // Check for updates on startup (after 3 seconds)
   setTimeout(() => {
@@ -68,10 +78,67 @@ function setupAutoUpdater() {
   
   autoUpdater.on('update-downloaded', () => {
     console.log('Update downloaded');
+    updateReadyToInstall = true;
     if (updateWindow) {
       updateWindow.webContents.send('update-downloaded');
     }
   });
+}
+
+function gracefulShutdown() {
+  console.log('Starting graceful shutdown...');
+  isQuitting = true;
+  
+  // Close all child windows first
+  if (adminWindow) {
+    adminWindow.close();
+  }
+  if (updateWindow) {
+    updateWindow.close();
+  }
+  
+  // Save any pending data (if needed)
+  if (settings) {
+    settings.save();
+  }
+  
+  // Force quit handler as backup
+  const forceQuitTimer = setTimeout(() => {
+    console.log('Force quitting application for update...');
+    app.exit(0);
+  }, 5000);
+  
+  // Wait a moment for cleanup, then quit and install
+  setTimeout(() => {
+    clearTimeout(forceQuitTimer);
+    console.log('Performing graceful shutdown and installing update...');
+    autoUpdater.quitAndInstall(false, true);
+  }, 500);
+}
+
+function forceKillProcess() {
+  console.log('Force killing any remaining application processes...');
+  const { exec } = require('child_process');
+  const appName = 'Movie Mill POS Kiosk';
+  
+  // Windows
+  if (process.platform === 'win32') {
+    exec(`taskkill /f /im "${appName}.exe"`, (error) => {
+      if (error) console.log('Process kill command completed');
+    });
+  }
+  // macOS
+  else if (process.platform === 'darwin') {
+    exec(`pkill -f "${appName}"`, (error) => {
+      if (error) console.log('Process kill command completed');
+    });
+  }
+  // Linux
+  else {
+    exec(`pkill -f "${appName}"`, (error) => {
+      if (error) console.log('Process kill command completed');
+    });
+  }
 }
 
 function registerAdminShortcut() {
@@ -232,7 +299,12 @@ ipcMain.handle('download-update', async () => {
 });
 
 ipcMain.handle('install-update', async () => {
-  autoUpdater.quitAndInstall();
+  if (updateReadyToInstall) {
+    gracefulShutdown();
+  } else {
+    console.log('Update not ready to install');
+    return false;
+  }
 });
 
 ipcMain.handle('check-for-updates', async () => {
@@ -255,8 +327,32 @@ ipcMain.handle('close-update', async () => {
   }
 });
 
-app.on('window-all-closed', () => app.quit());
+ipcMain.handle('force-kill-app', async () => {
+  console.log('Force kill requested via IPC');
+  forceKillProcess();
+  setTimeout(() => app.exit(0), 1000);
+});
+
+app.on('window-all-closed', () => {
+  if (!isQuitting) {
+    app.quit();
+  }
+});
+
+app.on('before-quit', (event) => {
+  if (updateReadyToInstall && !isQuitting) {
+    event.preventDefault();
+    gracefulShutdown();
+  }
+});
 
 app.on('will-quit', () => {
   globalShortcut.unregisterAll();
+});
+
+// Handle app activation (macOS)
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
 });

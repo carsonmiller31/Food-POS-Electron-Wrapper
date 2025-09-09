@@ -54,6 +54,10 @@ class SettingsManager {
     this.settings = { ...this.settings, ...newSettings };
     return this.saveSettings();
   }
+
+  save() {
+    return this.saveSettings();
+  }
 }
 
 module.exports = SettingsManager;
