@@ -1,6 +1,6 @@
 {
   "name": "pos-kiosk",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "POS Kiosk Electron wrapper for Movie Mill",
   "main": "main.js",
   "homepage": "https://github.com/moviemill/pos-kiosk",
