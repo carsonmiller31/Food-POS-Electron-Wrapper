@@ -1,0 +1,121 @@
+{
+  "name": "pos-kiosk",
+  "version": "1.0.1",
+  "description": "POS Kiosk Electron wrapper for Movie Mill",
+  "main": "main.js",
+  "homepage": "https://github.com/moviemill/pos-kiosk",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --inspect=9229",
+    "build": "electron-builder",
+    "build:win": "electron-builder -w",
+    "build:mac": "electron-builder -m",
+    "build:linux": "electron-builder -l",
+    "build:all": "electron-builder -mwl",
+    "dist": "npm run build",
+    "postinstall": "electron-builder install-app-deps",
+    "clean": "rimraf dist",
+    "pack": "electron-builder --dir",
+    "rebuild": "electron-rebuild"
+  },
+  "build": {
+    "appId": "com.moviemill.poskiosk",
+    "productName": "Movie Mill POS Kiosk",
+    "copyright": "Copyright © 2024 Movie Mill",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json"
+    ],
+    "extraResources": [],
+    "win": {
+      "target": {
+        "target": "nsis",
+        "arch": ["x64"]
+      },
+      "artifactName": "MovieMill-POS-Kiosk-Setup-${version}.${ext}"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "public.app-category.business",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64"]
+        }
+      ],
+      "category": "Office"
+    },
+    "appx": {
+      "displayName": "Movie Mill POS Kiosk",
+      "identityName": "com.moviemill.poskiosk",
+      "publisherDisplayName": "Movie Mill",
+      "backgroundColor": "#000000"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Movie Mill POS Kiosk"
+    },
+    "dmg": {
+      "title": "Movie Mill POS Kiosk ${version}",
+      "iconSize": 100,
+      "window": {
+        "width": 600,
+        "height": 400
+      },
+      "contents": [
+        {
+          "x": 150,
+          "y": 200,
+          "type": "file"
+        },
+        {
+          "x": 450,
+          "y": 200,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "moviemill",
+      "repo": "pos-kiosk"
+    }
+  },
+  "keywords": [],
+  "author": "Movie Mill",
+  "type": "commonjs",
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^38.0.0",
+    "electron-builder": "^26.0.12",
+    "electron-rebuild": "^3.2.9",
+    "rimraf": "^5.0.5"
+  }
+}

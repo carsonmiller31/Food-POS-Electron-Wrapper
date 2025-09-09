@@ -1,0 +1,71 @@
+# Movie Mill POS Kiosk
+
+Electron wrapper for Movie Mill POS system that provides silent printing capabilities for kitchen operations.
+
+## Features
+
+- **Silent Printing**: Print kitchen tickets without user dialogs
+- **Kiosk Mode**: Full-screen application for dedicated terminals
+- **Printer Management**: Select and configure receipt printers
+- **Auto-Recovery**: Automatic reload on crashes
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start in development mode with debugging
+npm run dev
+
+# Start normally
+npm start
+```
+
+## Building
+
+```bash
+# Build for current platform
+npm run build
+
+# Build for Windows
+npm run build:win
+
+# Build for macOS
+npm run build:mac
+
+# Build for Linux
+npm run build:linux
+
+# Build for all platforms
+npm run build:all
+```
+
+## Configuration
+
+Set the POS app URL via environment variable:
+
+```bash
+# For local development
+APP_URL=http://localhost:3000 npm start
+
+# For network deployment
+APP_URL=http://192.168.1.186:3000 npm start
+```
+
+## Printer Setup
+
+1. Install your receipt printer drivers
+2. Set the printer as default, or
+3. Use the printer selection in the POS app settings
+
+The app will automatically detect and prefer AURES ODP333 printers if available.
+
+## Deployment
+
+The built application includes:
+- Windows: NSIS installer and portable executable
+- macOS: DMG installer and ZIP archive
+- Linux: AppImage and DEB package
+
+For kiosk deployment, the app runs in fullscreen mode with the menu bar hidden.
