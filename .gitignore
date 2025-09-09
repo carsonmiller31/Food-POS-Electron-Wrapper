@@ -39,3 +39,7 @@ coverage/
 # Electron specific
 out/
 packages/
+
+# Security - never commit tokens or config files
+.env
+config.json
