@@ -30,6 +30,10 @@
     "directories": {
       "output": "dist"
     },
+    "compression": "maximum",
+    "electronLanguages": [
+      "en-US"
+    ],
     "files": [
       "main.js",
       "preload.js",
