@@ -1,8 +1,8 @@
 {
-  "appUrl": "http://192.168.1.186:3000",
+  "appUrl": "https://food-pos-system-neon.vercel.app",
   "debugMode": true,
   "disableRightClick": true,
   "autoRestart": null,
-  "adminPassword": "admin123",
+  "adminPassword": "1016",
   "printerName": "default"
 }

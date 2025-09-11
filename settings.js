@@ -1,21 +1,41 @@
 const fs = require('fs');
 const path = require('path');
+const { app } = require('electron');
 
 class SettingsManager {
   constructor() {
-    this.configPath = path.join(__dirname, 'config.json');
+    // Store settings in user-writable location
+    const userDataDir = app.getPath('userData');
+    this.configPath = path.join(userDataDir, 'config.json');
+    this.legacyConfigPath = path.join(__dirname, 'config.json');
+
     this.defaults = {
-      appUrl: 'http://192.168.1.186:3000',
-      adminPassword: 'admin123'
+      appUrl: 'https://food-pos-system-neon.vercel.app',
+      adminPassword: '1016',
+      hasSeenDriverPrompt: false,
+      driverInstalled: false
     };
     this.settings = this.loadSettings();
   }
 
   loadSettings() {
     try {
+      // Ensure directory exists
+      fs.mkdirSync(path.dirname(this.configPath), { recursive: true });
+
+      // Prefer current config path
       if (fs.existsSync(this.configPath)) {
         const data = fs.readFileSync(this.configPath, 'utf8');
         return { ...this.defaults, ...JSON.parse(data) };
+      }
+
+      // Migrate from legacy config (pre-1.0.9) if present
+      if (fs.existsSync(this.legacyConfigPath)) {
+        const legacyData = fs.readFileSync(this.legacyConfigPath, 'utf8');
+        const merged = { ...this.defaults, ...JSON.parse(legacyData) };
+        // Save migrated data to userData config path
+        fs.writeFileSync(this.configPath, JSON.stringify(merged, null, 2));
+        return merged;
       }
     } catch (error) {
       console.log('Error loading settings, using defaults:', error);
@@ -25,6 +45,8 @@ class SettingsManager {
 
   saveSettings() {
     try {
+      // Ensure directory exists
+      fs.mkdirSync(path.dirname(this.configPath), { recursive: true });
       fs.writeFileSync(this.configPath, JSON.stringify(this.settings, null, 2));
       return true;
     } catch (error) {

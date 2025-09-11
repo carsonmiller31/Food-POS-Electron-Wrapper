@@ -115,6 +115,17 @@
         .btn-update:hover {
             background: #218838;
         }
+
+        .btn-driver {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .btn-driver:hover {
+            background: #7c3aed;
+        }
+
+        
         
         .auth-form {
             display: block;
@@ -161,6 +172,15 @@
                 <p>Configure application settings</p>
             </div>
             <div class="form-group">
+                <label>Environment:</label>
+                <div class="env-options" style="display:flex; gap:16px; color:#ccc;">
+                    <label><input type="radio" name="envOption" id="envProd" value="prod"> Production</label>
+                    <label><input type="radio" name="envOption" id="envDev" value="dev"> Local Dev</label>
+                    <label><input type="radio" name="envOption" id="envCustom" value="custom"> Custom</label>
+                </div>
+                <div style="margin-top:6px; color:#888; font-size:12px;">Choose a preset or select Custom to enter your own URL.</div>
+            </div>
+            <div class="form-group">
                 <label for="appUrl">Application URL:</label>
                 <input type="text" id="appUrl" placeholder="http://192.168.1.186:3000">
             </div>
@@ -171,6 +191,7 @@
             <div id="settingsMessage" class="success"></div>
             <div class="button-group">
                 <button class="btn btn-cancel" onclick="closeAdmin()">Close</button>
+                <button class="btn btn-driver" onclick="openDriverSetup()">🖨️ Printer Driver</button>
                 <button class="btn btn-update" onclick="checkForUpdates()">🔄 Check Updates</button>
                 <button class="btn btn-save" onclick="saveSettings()">Save Settings</button>
             </div>
@@ -179,6 +200,8 @@
 
     <script>
         let currentSettings = {};
+        const PROD_URL = 'https://food-pos-system-neon.vercel.app';
+        const DEV_URL = 'http://192.168.1.186:3000';
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('password').focus();
@@ -216,8 +239,27 @@
             document.getElementById('authForm').style.display = 'none';
             document.getElementById('settingsForm').style.display = 'block';
             
-            document.getElementById('appUrl').value = currentSettings.appUrl || '';
-            document.getElementById('appUrl').focus();
+            const appUrlInput = document.getElementById('appUrl');
+            const currentUrl = currentSettings.appUrl || '';
+            appUrlInput.value = currentUrl;
+
+            // Determine initial environment selection
+            if (currentUrl === PROD_URL) {
+                document.getElementById('envProd').checked = true;
+                applyEnvSelection('prod', true);
+            } else if (currentUrl === DEV_URL) {
+                document.getElementById('envDev').checked = true;
+                applyEnvSelection('dev', true);
+            } else {
+                document.getElementById('envCustom').checked = true;
+                applyEnvSelection('custom', true);
+            }
+            appUrlInput.focus();
+
+            // Wire environment radio changes
+            document.getElementById('envProd').addEventListener('change', () => applyEnvSelection('prod'));
+            document.getElementById('envDev').addEventListener('change', () => applyEnvSelection('dev'));
+            document.getElementById('envCustom').addEventListener('change', () => applyEnvSelection('custom'));
         }
 
         async function saveSettings() {
@@ -257,6 +299,23 @@
             }
         }
 
+        function applyEnvSelection(env, initial = false) {
+            const input = document.getElementById('appUrl');
+            if (env === 'prod') {
+                input.value = PROD_URL;
+                input.disabled = true;
+            } else if (env === 'dev') {
+                input.value = DEV_URL;
+                input.disabled = true;
+            } else {
+                // custom
+                input.disabled = false;
+                if (initial && !input.value) {
+                    input.value = '';
+                }
+            }
+        }
+
         async function checkForUpdates() {
             const messageEl = document.getElementById('settingsMessage');
             messageEl.textContent = 'Checking for updates...';
@@ -264,10 +323,14 @@
             
             try {
                 const result = await window.electronAPI.checkForUpdates();
-                if (result) {
+                if (result && result.ok) {
                     messageEl.textContent = 'Update check initiated. Please wait...';
+                } else if (result && result.error) {
+                    messageEl.textContent = `Update check failed: ${result.error.message || 'Unknown error'}${result.error.statusCode ? ` (HTTP ${result.error.statusCode})` : ''}`;
+                    messageEl.className = 'error';
                 } else {
-                    messageEl.textContent = 'No updates available';
+                    messageEl.textContent = 'Update check did not complete.';
+                    messageEl.className = 'error';
                 }
             } catch (error) {
                 messageEl.textContent = 'Failed to check for updates';
@@ -275,8 +338,16 @@
             }
         }
 
+        
+
         function closeAdmin() {
             window.electronAPI.closeAdmin();
+        }
+
+        function openDriverSetup() {
+            if (window.electronAPI && window.electronAPI.openDriverSetup) {
+                window.electronAPI.openDriverSetup();
+            }
         }
 
         window.addEventListener('keydown', (e) => {
@@ -284,6 +355,34 @@
                 closeAdmin();
             }
         });
+
+        // Listen for updater status messages from main process
+        if (window.electronAPI.onUpdateStatus) {
+            window.electronAPI.onUpdateStatus((payload) => {
+                const messageEl = document.getElementById('settingsMessage');
+                if (!payload) return;
+                switch (payload.type) {
+                    case 'checking':
+                        messageEl.textContent = 'Checking for updates...';
+                        messageEl.className = 'success';
+                        break;
+                    case 'available':
+                        messageEl.textContent = `Update available: v${payload.version}. Opening updater...`;
+                        messageEl.className = 'success';
+                        break;
+                    case 'no-update':
+                        messageEl.textContent = `No updates available. Current: v${payload.current}${payload.latest ? `, Latest: v${payload.latest}` : ''}`;
+                        messageEl.className = 'success';
+                        break;
+                    case 'error':
+                        messageEl.textContent = `Update error: ${payload.message || 'Unknown error'}${payload.statusCode ? ` (HTTP ${payload.statusCode})` : ''}`;
+                        messageEl.className = 'error';
+                        break;
+                    default:
+                        break;
+                }
+            });
+        }
     </script>
 </body>
 </html>

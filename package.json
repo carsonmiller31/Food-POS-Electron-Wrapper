@@ -1,6 +1,6 @@
 {
   "name": "pos-kiosk",
-  "version": "1.0.3",
+  "version": "1.0.10",
   "description": "POS Kiosk Electron wrapper for Movie Mill",
   "main": "main.js",
   "homepage": "https://github.com/moviemill/pos-kiosk",
@@ -14,6 +14,8 @@
     "build:linux": "electron-builder -l",
     "build:all": "electron-builder -mwl",
     "publish": "source .env && electron-builder --publish=always",
+    "publish:win": "source .env && electron-builder -w --publish always",
+    "publish:mac": "source .env && electron-builder -m --publish always",
     "dist": "npm run build",
     "postinstall": "electron-builder install-app-deps",
     "clean": "rimraf dist",
@@ -24,6 +26,7 @@
     "appId": "com.moviemill.poskiosk",
     "productName": "Movie Mill POS Kiosk",
     "copyright": "Copyright © 2024 Movie Mill",
+    "icon": "kitchen-pos-logo Background Removed.png",
     "directories": {
       "output": "dist"
     },
@@ -32,10 +35,11 @@
       "preload.js",
       "settings.js",
       "admin-panel.html",
+      "driver-setup.html",
       "update-notification.html",
-      "package.json"
+      "package.json",
+      "kitchen-pos-logo Background Removed.png"
     ],
-    "extraResources": [],
     "win": {
       "target": {
         "target": "nsis",
@@ -43,7 +47,13 @@
           "x64"
         ]
       },
-      "artifactName": "MovieMill-POS-Kiosk-Setup-${version}.${ext}"
+      "artifactName": "MovieMill-POS-Kiosk-Setup-${version}.${ext}",
+      "extraResources": [
+        {
+          "from": "AURES Elite Printer Driver 4.64.exe",
+          "to": "drivers"
+        }
+      ]
     },
     "mac": {
       "target": [
@@ -122,7 +132,8 @@
       "provider": "github",
       "owner": "carsonmiller31",
       "repo": "Food-POS-Electron-Wrapper",
-      "private": true
+      "private": false,
+      "releaseType": "release"
     }
   },
   "keywords": [],

@@ -13,9 +13,22 @@ contextBridge.exposeInMainWorld('electronAPI', {
   checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
   getUpdateInfo: () => ipcRenderer.invoke('get-update-info'),
   closeUpdate: () => ipcRenderer.invoke('close-update'),
+  // App controls
+  exitApp: () => ipcRenderer.invoke('app-exit'),
+  hardRefresh: () => ipcRenderer.invoke('hard-refresh'),
+  deepRefresh: () => ipcRenderer.invoke('deep-refresh'),
+  // Driver setup
+  installPrinterDriver: () => ipcRenderer.invoke('install-printer-driver'),
+  markDriverInstalled: () => ipcRenderer.invoke('mark-driver-installed'),
+  markDriverPromptSeen: () => ipcRenderer.invoke('mark-driver-prompt-seen'),
+  getDriverStatus: () => ipcRenderer.invoke('get-driver-status'),
+  closeDriverSetup: () => ipcRenderer.invoke('close-driver-setup'),
+  openDriverSetup: () => ipcRenderer.invoke('open-driver-setup'),
   // Update event listeners
   onDownloadProgress: (callback) => ipcRenderer.on('download-progress', (_, progress) => callback(progress)),
-  onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', () => callback())
+  onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', () => callback()),
+  // Admin update status messages
+  onUpdateStatus: (callback) => ipcRenderer.on('update-status', (_, payload) => callback(payload))
 });
 
 console.log('✅ Simple Electron API ready');
