@@ -27,7 +27,7 @@ const config = {
   
   mac: {
     // macOS code signing
-    identity: process.env.MAC_CERT_NAME || 'Developer ID Application: Movie Mill',
+    identity: process.env.MAC_CERT_NAME || 'Developer ID Application: Royal Theater',
     
     // App Store Connect API (for notarization)
     appleId: process.env.APPLE_ID,
@@ -57,7 +57,7 @@ const config = {
   // Publish configuration
   publish: {
     provider: 'github',
-    owner: process.env.GITHUB_OWNER || 'moviemill',
+    owner: process.env.GITHUB_OWNER || 'royaltheater',
     repo: process.env.GITHUB_REPO || 'pos-kiosk',
     token: process.env.GH_TOKEN,
     private: true,

@@ -18,7 +18,7 @@ function createWindow() {
   settings = new SettingsManager();
   
   // Version info for testing
-  console.log('🚀 Movie Mill POS Kiosk v' + app.getVersion() + ' - Auto-update test version!');
+  console.log('🚀 Royal Theater POS Kiosk v' + app.getVersion() + ' - Auto-update test version!');
   
   // Set app to launch at startup
   app.setLoginItemSettings({
@@ -254,7 +254,7 @@ function gracefulShutdown() {
 function forceKillProcess() {
   console.log('Force killing any remaining application processes...');
   const { exec } = require('child_process');
-  const appName = 'Movie Mill POS Kiosk';
+  const appName = 'Royal Theater POS Kiosk';
   
   // Windows
   if (process.platform === 'win32') {

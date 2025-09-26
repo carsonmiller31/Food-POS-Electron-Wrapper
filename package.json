@@ -1,7 +1,7 @@
 {
   "name": "pos-kiosk",
-  "version": "1.0.11",
-  "description": "POS Kiosk Electron wrapper for Movie Mill",
+  "version": "1.0.12",
+  "description": "POS Kiosk Electron wrapper for Royal Theater",
   "main": "main.js",
   "homepage": "https://github.com/moviemill/pos-kiosk",
   "license": "MIT",
@@ -23,9 +23,9 @@
     "rebuild": "electron-rebuild"
   },
   "build": {
-    "appId": "com.moviemill.poskiosk",
-    "productName": "Movie Mill POS Kiosk",
-    "copyright": "Copyright © 2024 Movie Mill",
+    "appId": "com.royaltheater.poskiosk",
+    "productName": "Royal Theater POS Kiosk",
+    "copyright": "Copyright © 2024 Royal Theater",
     "icon": "kitchen-pos-logo Background Removed.png",
     "directories": {
       "output": "dist"
@@ -51,7 +51,7 @@
           "x64"
         ]
       },
-      "artifactName": "MovieMill-POS-Kiosk-Setup-${version}.${ext}",
+      "artifactName": "RoyalTheater-POS-Kiosk-Setup-${version}.${ext}",
       "extraResources": [
         {
           "from": "AURES Elite Printer Driver 4.64.exe",
@@ -98,9 +98,9 @@
       "category": "Office"
     },
     "appx": {
-      "displayName": "Movie Mill POS Kiosk",
-      "identityName": "com.moviemill.poskiosk",
-      "publisherDisplayName": "Movie Mill",
+      "displayName": "Royal Theater POS Kiosk",
+      "identityName": "com.royaltheater.poskiosk",
+      "publisherDisplayName": "Royal Theater",
       "backgroundColor": "#000000"
     },
     "nsis": {
@@ -109,10 +109,10 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Movie Mill POS Kiosk"
+      "shortcutName": "Royal Theater POS Kiosk"
     },
     "dmg": {
-      "title": "Movie Mill POS Kiosk ${version}",
+      "title": "Royal Theater POS Kiosk ${version}",
       "iconSize": 100,
       "window": {
         "width": 600,
@@ -141,7 +141,7 @@
     }
   },
   "keywords": [],
-  "author": "Movie Mill",
+  "author": "Royal Theater",
   "type": "commonjs",
   "dependencies": {
     "electron-updater": "^6.6.2"

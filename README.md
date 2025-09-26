@@ -1,6 +1,6 @@
-# Movie Mill POS Kiosk
+# Royal Theater POS Kiosk
 
-Electron wrapper for Movie Mill POS system that provides silent printing capabilities for kitchen operations.
+Electron wrapper for Royal Theater POS system that provides silent printing capabilities for kitchen operations.
 
 ## Features
 
