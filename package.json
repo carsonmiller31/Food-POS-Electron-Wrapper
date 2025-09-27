@@ -10,6 +10,7 @@
     "dev": "electron . --inspect=9229",
     "build": "electron-builder",
     "build:win": "electron-builder -w",
+    "build:win:clean": "rimraf dist && electron-builder -w",
     "build:mac": "electron-builder -m",
     "build:linux": "electron-builder -l",
     "build:all": "electron-builder -mwl",
@@ -20,7 +21,9 @@
     "postinstall": "electron-builder install-app-deps",
     "clean": "rimraf dist",
     "pack": "electron-builder --dir",
-    "rebuild": "electron-rebuild"
+    "rebuild": "electron-rebuild",
+    "release:win": "bash ./release-win.sh",
+    "release": "npm run release:win"
   },
   "build": {
     "appId": "com.royaltheater.poskiosk",

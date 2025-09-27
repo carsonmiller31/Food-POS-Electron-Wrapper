@@ -1,15 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Load environment variables
-if [ -f .env ]; then
-    export $(cat .env | grep -v '^#' | xargs)
-fi
+echo "Using GitHub CLI-based release flow (no GH_TOKEN needed)."
+echo "Ensure you are logged in: gh auth status"
 
-# Check if GH_TOKEN is set
-if [ -z "$GH_TOKEN" ]; then
-    echo "Error: GH_TOKEN is not set in .env file"
-    exit 1
-fi
-
-echo "Publishing with GitHub token..."
-npm run build -- --publish=always
+# Delegate to the cross-platform release script
+npm run release:win
