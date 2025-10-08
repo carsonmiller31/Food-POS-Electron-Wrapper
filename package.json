@@ -150,7 +150,7 @@
     "electron-updater": "^6.6.2"
   },
   "devDependencies": {
-    "electron": "^38.0.0",
+    "electron": "^38.2.2",
     "electron-builder": "^26.0.12",
     "electron-rebuild": "^3.2.9",
     "rimraf": "^5.0.5"
