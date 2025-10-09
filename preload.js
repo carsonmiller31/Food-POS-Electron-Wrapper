@@ -17,6 +17,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   exitApp: () => ipcRenderer.invoke('app-exit'),
   hardRefresh: () => ipcRenderer.invoke('hard-refresh'),
   deepRefresh: () => ipcRenderer.invoke('deep-refresh'),
+  // Timeclock popup
+  openTimeclock: () => ipcRenderer.invoke('open-timeclock'),
+  closeTimeclock: () => ipcRenderer.invoke('close-timeclock'),
   // Driver setup
   installPrinterDriver: () => ipcRenderer.invoke('install-printer-driver'),
   markDriverInstalled: () => ipcRenderer.invoke('mark-driver-installed'),

@@ -69,3 +69,18 @@ The built application includes:
 - Linux: AppImage and DEB package
 
 For kiosk deployment, the app runs in fullscreen mode with the menu bar hidden.
+
+## Timeclock Popup Window
+
+To open the Scheduley Timeclock site in a popup window that remembers login cookies between runs, call the exposed preload API from your web app loaded in the kiosk:
+
+```js
+// In your web app (renderer)
+document.getElementById('openTimeclockBtn').addEventListener('click', () => {
+  window.electronAPI?.openTimeclock();
+});
+```
+
+Notes:
+- The popup uses a persistent session partition (`persist:timeclock`) so cookies and storage persist across app restarts.
+- The window is always on top and can be closed with the standard close button. You can also programmatically close it via `window.electronAPI?.closeTimeclock()`.

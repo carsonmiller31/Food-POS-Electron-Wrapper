@@ -1,5 +1,5 @@
-const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron');
-const { autoUpdater } = require('electron-updater');
+const { app, BrowserWindow, ipcMain, globalShortcut, session } = require('electron');
+let autoUpdater; // lazily required after app context is ready
 const SettingsManager = require('./settings');
 const path = require('path');
 const fs = require('fs');
@@ -9,6 +9,7 @@ let mainWindow;
 let adminWindow;
 let updateWindow;
 let driverWindow;
+let timeclockWindow;
 let settings;
 let pendingUpdateInfo;
 let isQuitting = false;
@@ -111,6 +112,16 @@ function showDriverSetupWindow() {
 }
  
 function setupAutoUpdater() {
+  // Lazy-load electron-updater only when running in Electron main context
+  if (!autoUpdater) {
+    try {
+      const { autoUpdater: au } = require('electron-updater');
+      autoUpdater = au;
+    } catch (e) {
+      console.log('Failed to load electron-updater:', e);
+      return; // Skip updater in environments where it cannot load
+    }
+  }
   // Force updates in development for testing
   if (!app.isPackaged) {
     Object.defineProperty(app, 'isPackaged', {
@@ -126,13 +137,8 @@ function setupAutoUpdater() {
   autoUpdater.allowPrerelease = process.env.ALLOW_PRERELEASE === 'true';
   autoUpdater.allowDowngrade = false;
   
-  // Public repo updates do not require GH_TOKEN; ignore if present
-  const GH_TOKEN = process.env.GH_TOKEN || process.env.ELECTRON_GH_TOKEN;
-  if (GH_TOKEN) {
-    console.log('ℹ️ GH_TOKEN detected but not required for public updates. Ignoring token.');
-  } else {
-    console.log('ℹ️ No GH_TOKEN needed for public GitHub updates.');
-  }
+  // No GH_TOKEN required for public GitHub updates; we always use public GitHub releases via gh CLI
+  console.log('ℹ️ Using public GitHub releases (no GH_TOKEN).');
 
   // Set the update server URL
   const UPDATE_PROVIDER = (process.env.UPDATE_PROVIDER || '').toLowerCase();
@@ -247,7 +253,11 @@ function gracefulShutdown() {
   setTimeout(() => {
     clearTimeout(forceQuitTimer);
     console.log('Performing graceful shutdown and installing update...');
-    autoUpdater.quitAndInstall(false, true);
+    if (autoUpdater && typeof autoUpdater.quitAndInstall === 'function') {
+      autoUpdater.quitAndInstall(false, true);
+    } else {
+      app.quit();
+    }
   }, 500);
 }
 
@@ -410,6 +420,54 @@ ipcMain.handle('validate-password', async (_, password) => {
     };
   }
   return { valid: false };
+});
+
+// TIMECLOCK WINDOW
+function openTimeclockWindow() {
+  if (timeclockWindow && !timeclockWindow.isDestroyed()) {
+    timeclockWindow.focus();
+    return;
+  }
+
+  // Use a separate persistent partition so cookies/session persist across app restarts
+  const partitionName = 'persist:timeclock';
+  session.fromPartition(partitionName);
+
+  timeclockWindow = new BrowserWindow({
+    width: 1100,
+    height: 800,
+    parent: mainWindow,
+    modal: false,
+    autoHideMenuBar: true,
+    resizable: true,
+    alwaysOnTop: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: require('path').join(__dirname, 'preload.js'),
+      partition: partitionName
+    }
+  });
+
+  timeclockWindow.loadURL('https://timeclock.scheduley.net/timeclock');
+
+  timeclockWindow.on('closed', () => {
+    timeclockWindow = null;
+  });
+}
+
+ipcMain.handle('open-timeclock', async () => {
+  openTimeclockWindow();
+  return true;
+});
+
+ipcMain.handle('close-timeclock', async () => {
+  if (timeclockWindow && !timeclockWindow.isDestroyed()) {
+    timeclockWindow.close();
+    timeclockWindow = null;
+    return true;
+  }
+  return false;
 });
 
 ipcMain.handle('save-settings', async (_, newSettings) => {

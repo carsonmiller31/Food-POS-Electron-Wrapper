@@ -59,8 +59,8 @@ const config = {
     provider: 'github',
     owner: process.env.GITHUB_OWNER || 'royaltheater',
     repo: process.env.GITHUB_REPO || 'pos-kiosk',
-    token: process.env.GH_TOKEN,
-    private: true,
+    // No token used; publishing handled via GitHub CLI in scripts
+    private: false,
     releaseType: 'release' // 'draft', 'prerelease', 'release'
   }
 };
