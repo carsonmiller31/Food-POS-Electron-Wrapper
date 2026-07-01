@@ -36,7 +36,7 @@ log "Version detected: $VERSION ($TAG)"
 log "Building Windows installer (if environment supports it)..."
 if command -v npx >/dev/null 2>&1; then
   if npx electron-builder --version >/dev/null 2>&1; then
-    if npx electron-builder -w; then
+    if npx electron-builder -w -p never; then
       log "Build completed."
     else
       log "Build failed (likely missing wine/mono). Proceeding with existing artifacts in dist/."
