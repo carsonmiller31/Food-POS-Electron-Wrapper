@@ -10,12 +10,30 @@ class SettingsManager {
     this.legacyConfigPath = path.join(__dirname, 'config.json');
 
     this.defaults = {
-      appUrl: 'https://food-pos.royaltheaters-systems.com',
+      appUrl: 'https://kitchen-pos.systems.royaltheaters.com',
       adminPassword: '1016',
       hasSeenDriverPrompt: false,
       driverInstalled: false
     };
+
+    // Retired production URLs. Kiosks that saved one of these get moved
+    // to the current default on startup.
+    this.retiredAppUrls = [
+      'https://food-pos.royaltheaters-systems.com',
+      'https://food-pos-system-neon.vercel.app'
+    ];
+
     this.settings = this.loadSettings();
+    this.migrateRetiredAppUrl();
+  }
+
+  migrateRetiredAppUrl() {
+    const saved = String(this.settings.appUrl || '').trim().replace(/\/+$/, '');
+    if (this.retiredAppUrls.includes(saved)) {
+      console.log(`Migrating appUrl from ${saved} to ${this.defaults.appUrl}`);
+      this.settings.appUrl = this.defaults.appUrl;
+      this.saveSettings();
+    }
   }
 
   loadSettings() {

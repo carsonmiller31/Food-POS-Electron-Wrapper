@@ -1,6 +1,6 @@
 {
   "name": "pos-kiosk",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "POS Kiosk Electron wrapper for Royal Theater",
   "main": "main.js",
   "homepage": "https://github.com/moviemill/pos-kiosk",
@@ -14,7 +14,6 @@
     "build:mac": "electron-builder -m",
     "build:linux": "electron-builder -l",
     "build:all": "electron-builder -mwl",
-    
     "dist": "npm run build",
     "postinstall": "electron-builder install-app-deps",
     "clean": "rimraf dist",
