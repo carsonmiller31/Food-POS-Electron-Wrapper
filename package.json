@@ -6,6 +6,8 @@
   "homepage": "https://github.com/moviemill/pos-kiosk",
   "license": "MIT",
   "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:smoke": "electron test/electron-smoke.js",
     "start": "electron .",
     "dev": "electron . --inspect=9229",
     "build": "electron-builder",
@@ -25,7 +27,7 @@
   "build": {
     "appId": "com.royaltheater.poskiosk",
     "productName": "Royal Theater POS Kiosk",
-    "copyright": "Copyright © 2024 Royal Theater",
+    "copyright": "Copyright \u00a9 2024 Royal Theater",
     "icon": "kitchen-pos-logo Background Removed.png",
     "directories": {
       "output": "dist"
@@ -38,6 +40,8 @@
       "main.js",
       "preload.js",
       "settings.js",
+      "kiosk-security.js",
+      "load-error.html",
       "admin-panel.html",
       "driver-setup.html",
       "update-notification.html",
@@ -147,7 +151,7 @@
     "electron-updater": "^6.6.2"
   },
   "devDependencies": {
-    "electron": "^38.2.2",
+    "electron": "^38.8.6",
     "electron-builder": "^26.0.12",
     "electron-rebuild": "^3.2.9",
     "rimraf": "^5.0.5"
