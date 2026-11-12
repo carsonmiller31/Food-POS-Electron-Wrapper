@@ -1,6 +1,6 @@
 {
   "name": "pos-kiosk",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "POS Kiosk Electron wrapper for Royal Theater",
   "main": "main.js",
   "homepage": "https://github.com/moviemill/pos-kiosk",
@@ -27,7 +27,7 @@
   "build": {
     "appId": "com.royaltheater.poskiosk",
     "productName": "Royal Theater POS Kiosk",
-    "copyright": "Copyright \u00a9 2024 Royal Theater",
+    "copyright": "Copyright © 2024 Royal Theater",
     "icon": "kitchen-pos-logo Background Removed.png",
     "directories": {
       "output": "dist"
